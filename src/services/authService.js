@@ -1,27 +1,36 @@
 // src/services/authService.js
 import axios from "axios";
 import { AUTH_URL as API_URL } from "../../config/serverConfig";
+import { toast } from "react-toastify";
 
 export const register = async (username, password) => {
-    const response = await axios.post(`${API_URL}/register`, {
-        username,
-        password,
-    });
-    if (response.data.token) {
-        localStorage.setItem("user", JSON.stringify(response.data));
+    try {
+        const response = await axios.post(`${API_URL}/register`, {
+            username,
+            password,
+        });
+        if (response.data.token) {
+            localStorage.setItem("user", JSON.stringify(response.data));
+        }
+        return response.data;
+    } catch (error) {
+        toast.error("Username already exists");
     }
-    return response.data;
 };
 
 export const login = async (username, password) => {
-    const response = await axios.post(`${API_URL}/login`, {
-        username,
-        password,
-    });
-    if (response.data.token) {
-        localStorage.setItem("user", JSON.stringify(response.data));
+    try {
+        const response = await axios.post(`${API_URL}/login`, {
+            username,
+            password,
+        });
+        if (response.data.token) {
+            localStorage.setItem("user", JSON.stringify(response.data));
+        }
+        return response.data;
+    } catch (error) {
+        toast.error("Invalid username or password");
     }
-    return response.data;
 };
 
 export const logout = () => {
