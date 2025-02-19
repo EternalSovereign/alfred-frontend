@@ -56,6 +56,7 @@ const App = () => {
                             }
                         />
                         <Route path="/" element={<Navigate to="/home" />} />
+                        <Route path="*" element={<Navigate to="/home" />} />
                     </Routes>
                     <ToastContainer />
                 </Router>
