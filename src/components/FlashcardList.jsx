@@ -1,5 +1,4 @@
-// src/components/FlashcardList.js
-import React from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import Flashcard from "./Flashcard";
 
@@ -10,12 +9,29 @@ const FlashcardList = ({
     handleDelete,
     darkMode,
 }) => {
+    const [filteredFlashcards, setFilteredFlashcards] = useState([]);
+
+    useEffect(() => {
+        const filterFlashcards = () => {
+            const now = new Date();
+            const dueFlashcards = flashcards.filter((card) => {
+                const reviewTime = new Date(card.nextReview);
+                return reviewTime <= now;
+            });
+            setFilteredFlashcards(dueFlashcards);
+        };
+
+        filterFlashcards();
+        const intervalId = setInterval(filterFlashcards, 10000);
+        return () => clearInterval(intervalId);
+    }, [flashcards]);
+
     return (
         <>
             <h3 className="mb-3">
-                You have {flashcards.length} flashcards due today
+                You have {filteredFlashcards.length} flashcards due today
             </h3>
-            {flashcards.map((card) => (
+            {filteredFlashcards.map((card) => (
                 <Flashcard
                     key={card._id}
                     card={card}
@@ -28,6 +44,7 @@ const FlashcardList = ({
         </>
     );
 };
+
 FlashcardList.propTypes = {
     flashcards: PropTypes.arrayOf(
         PropTypes.shape({
@@ -36,12 +53,14 @@ FlashcardList.propTypes = {
             answer: PropTypes.string.isRequired,
             showAnswer: PropTypes.bool.isRequired,
             user: PropTypes.string.isRequired,
+            nextReview: PropTypes.instanceOf(Date).isRequired,
             // add other card properties here if needed
         })
     ).isRequired,
-    showAnswer: PropTypes.bool.isRequired,
+    showAnswer: PropTypes.func.isRequired,
     handleAnswer: PropTypes.func.isRequired,
     handleDelete: PropTypes.func.isRequired,
     darkMode: PropTypes.bool.isRequired,
 };
+
 export default FlashcardList;
